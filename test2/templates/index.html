@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BAKARWAL ANALYSIS</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .captured-image {
+            width: 320px;
+            height: 240px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BAKARWAL ANALYSIS</h1>
+    
+    <form method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required><br>
+        
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="">-- Select Gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select><br>
+        
+        <label for="arrival_date">Arrival Date:</label>
+        <input type="date" id="arrival_date" name="arrival_date" required><br>
+        
+        <label for="goats">Number of Goats:</label>
+        <input type="number" id="goats" name="goats" required><br>
+        
+        <label for="aadhar_id">Aadhar ID:</label>
+        <input type="text" id="aadhar_id" name="aadhar_id" required><br>
+        
+        <label for="relationship_id">Relationship ID:</label>
+        <input type="text" id="relationship_id" name="relationship_id" required><br>
+        
+        <label for="relationship">Relationship:</label>
+        <input type="text" id="relationship" name="relationship" required><br>
+        
+        
+        <button type="button" onclick="captureImage()">Capture Image</button>
+        <button type="submit" name="action" value="submit">Submit Form</button>
+    </form>
+
+    {% if image_path %}
+        <img src="{{ image_path }}" class="captured-image">
+    {% else %}
+        <p>No image captured</p>
+    {% endif %}
+
+  <script>
+    function captureImage() {
+        // Access the webcam stream
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                var video = document.createElement("video");
+                video.srcObject = stream;
+                video.play();
+
+                video.onloadedmetadata = function(e) {
+                    // Create a canvas element
+                    var canvas = document.createElement("canvas");
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Capture the current video frame
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Convert the canvas image to base64 data URL
+                    var imageDataURL = canvas.toDataURL("image/jpeg");
+
+                    // Set the captured image source
+                    var imageElement = document.createElement("img");
+                    imageElement.src = imageDataURL;
+                    imageElement.classList.add("captured-image");
+
+                    // Remove previous captured image if exists
+                    var previousImage = document.querySelector(".captured-image");
+                    if (previousImage) {
+                        previousImage.remove();
+                    }
+
+                    // Append the captured image to the form
+                    var form = document.querySelector("form");
+                    form.appendChild(imageElement);
+
+                    // Save the captured image to a folder
+                    saveImage(imageDataURL);
+                };
+            })
+            .catch(function(error) {
+                console.log("Error accessing the webcam: " + error);
+            });
+    }
+
+    function saveImage(imageDataURL) {
+        // Create a form data object
+        var formData = new FormData();
+        // Convert the data URL to a Blob object
+        var imageBlob = dataURLtoBlob(imageDataURL);
+        // Append the Blob to the form data with a custom filename
+        formData.append('image', imageBlob, 'captured_image.jpg');
+
+        // Send the form data to the server using an AJAX request
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/save_image', true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                console.log('Image saved successfully');
+            } else {
+                console.log('Image save failed');
+            }
+        };
+        xhr.send(formData);
+    }
+
+    function dataURLtoBlob(dataURL) {
+        var byteString = atob(dataURL.split(',')[1]);
+        var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
+</script>
+</body>
+</html>

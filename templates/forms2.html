@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <title>Information Form</title>
+</head>
+<body>
+    <h1>Information Form</h1>
+    <form method="POST" action="/submit">
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" required><br>
+
+        <label for="current_id">Current ID:</label>
+        <input type="text" id="current_id" name="current_id" required><br>
+
+        <label for="relation_with_id">Relation with ID:</label>
+        <input type="text" id="relation_with_id" name="relation_with_id" required><br>
+
+        <label for="relation">Relation:</label>
+        <input type="text" id="relation" name="relation" required><br>
+
+        <label for="sex">Sex:</label>
+        <select id="sex" name="sex" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select><br>
+
+        
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age" required><br>
+
+        <label for="father_name">Father's Name:</label>
+        <input type="text" id="father_name" name="father_name" required><br>
+
+        <label for="village">Village:</label>
+        <input type="text" id="village" name="village" required><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
